@@ -14,12 +14,29 @@ PlayGame::PlayGame(ConnectMatrix m) {
 	this->vec = m.getVector();
 }
 
+PlayGame::PlayGame(ConnectMatrix m, int wins, int losses, int draws, int index) {
+	this->m = m;
+	this->vec = m.getVector();
+	this->wins = wins;
+	this->losses = losses;
+	this->draws = draws;
+	this->index = index;
+}
+
 float PlayGame::calcPayOut() {
 	return (wins + (.5 * draws) / (wins + draws + losses));
 }
 
+void PlayGame::incrementW() {
+	wins++;
+}
+void PlayGame::incrementL() {
+	losses++;
+}
+
 void PlayGame::setMatrix(ConnectMatrix m) {
 	this->m = m;
+	this->vec = m.getVector();
 }
 
 void PlayGame::setVector() {
@@ -28,6 +45,13 @@ void PlayGame::setVector() {
 
 vector<vector<int>> PlayGame::getVector() {
 	return m.getVector();
+}
+
+int PlayGame::getIndex() {
+	return index;
+}
+void PlayGame::setIndex(int i) {
+	index = i;
 }
 
 ConnectMatrix PlayGame::getMatrix() {
@@ -172,20 +196,20 @@ float PlayGame::playFullGame() {
 		m.placeMove(j, n);
 		setVector();
 		if (winCheck(n) || drawCheck()) {
-			//cout << "Win Check : " << winCheck(n) << endl << endl;
-			//cout << "Diag Check : " << diagCheck(n) << endl << endl;
-			//cout << "vert Check : " << vertCheck(n) << endl << endl;
-			//cout << "horiz Check : " << horizCheck(n) << endl << endl;
-			//cout << "draw Check : " << drawCheck() << endl << endl;
 			break;
 		}
 		n = (n % 2) + 1;
 	}
 
-	if (drawCheck() == true || n == 1) {
+	if (drawCheck() == true) {
+		draws++;
 		return 1;
 	}
+	if (n == 1) {
+		wins++;
+	}
 	else {
+		losses++;
 		return 0;
 	}
 }
