@@ -16,6 +16,7 @@ bool inboundMove(vector <vector<int>> & vec, int row) {
 	}
 	return true;
 }
+
 void printVector(vector <vector<int>> & vec) {
 	for (int i = 0; i < vec.size(); i++) {
 		for (int j = 0; j < vec[i].size(); j++) {
@@ -26,12 +27,13 @@ void printVector(vector <vector<int>> & vec) {
 }
 
 
+//So j is being set as 6 because in the for loop vec[row].sie() is the col which is size 7 therefore returns 6 and needs to be 5 beacuse of how im checking in diag
 void placeMove(vector <vector<int>> & vec, int row, int player) {
 		if (inboundMove(vec, row)) {
-			for (int j = 0; j < vec[row].size(); j++) {
-				if (vec[row][j] == 0) {
-					vec[row][j] = player;
-					y = j;
+			for (int i = 0; i < vec[row].size(); i++) {
+				if (vec[row][i] == 0) {
+					vec[row][i] = player;
+					y = i;
 					break;
 				}
 			}
@@ -43,7 +45,7 @@ void placeMove(vector <vector<int>> & vec, int row, int player) {
 
 bool vertCheck(vector<vector<int>> & vec, int col, int player) {
 	int count = 0;
-	for (int i = 0; i < vec.size()-1; i++) {
+	for (int i = 0; i < vec.size(); i++) {
 		if (vec[i][col] == player) {
 			count++;
 		}
@@ -75,21 +77,50 @@ bool horizCheck(vector<vector<int>> & vec, int row, int player) {
 	return false;
 }
 
+//Row goes out of bounds 
 bool diagCheck(vector<vector<int>> & vec, int row, int col, int player) {
 
-	int i = row;
-	int j = col;
-	int count = 0;
-	int k = vec[row].size();
 
+	
+
+	//Rows go up and down
+	//Cols go left and right
+	//I is set as 6
+	int i = col;
+	int j = row;
+	int count = 0;
+
+
+	//The because it was formerly i < vec.size() it would go to 7 because there are 7 rows, but we're looking at a singel row.
+	//Therefore we need to switch I and J
 	//Bottom Left Corner
-	while (i < vec.size() || j < vec[row].size() ) {
+	//cout << "I Current: " << i << endl << endl;
+	//cout << "I size: " << vec[i].size() << endl << endl;
+	//cout << "J size: " << vec.size() << endl << endl;
+
+	//vec[vec.size() - 1][vec[0].size() - 3] = 5;
+	//printVector(vec);
+	//cout << vec[vec.size() - 3][vec[0].size()-1] << endl << endl;
+
+	while (i < vec[i].size() && i > 0 && j > 0 && j < vec.size()) {
 		i--;
 		j++;
 	}
+	
+	//cout << "Test this3: " << (i < vec.size() && j > 0) << endl << endl;
+	//cout << "Test this4: " << (j > 0) << endl << endl;
+	//cout << "Test this5: " << (i < vec.size()) << endl << endl;
 
-	while (i < vec.size()-1 || j > 0) {
-		if (vec[i][j] == player) {
+
+	//cout << "I size after: " << i << endl << endl;
+	//cout << "j size after: " << j << endl << endl;
+
+	//Swapp this
+	//Swapped
+	//Crashes at i = 1, j = 6
+	//And when i = 6 and j = 0, so above while loop doesn't run once because it's false;
+	while (i < vec[i].size() && i > 0 && j > 0 && j < vec.size()) {
+		if (vec[j][i] == player) {
 			count++;
 		}
 		else {
@@ -107,20 +138,32 @@ bool diagCheck(vector<vector<int>> & vec, int row, int col, int player) {
 	count = 0;
 
 	//Bottom Right Corner
-	while (i > 0 || j > 0) {
+	while (i > 0 && j > 0) {
 		i--;
 		j--;
 	}
 
-	while (i < vec.size() || j < vec[i].size()) {
-		if (vec[i][j] == player) {
+
+	//Review this
+	//crashed at i = 5 j = 6
+	//thinking j is left right so, vec.size() probably isn't appropriate, that or i's bound isn't appropriate
+	//i's size is 6
+	//j's size is 7 based on logs
+	//THerefore I think I and J need to be switched
+	//i may actually be the columns
+	// j may actually be the rows
+	//so i has to be vec[i].size() and j has to be vec.size()
+
+	//Swap this
+	//Swapped
+	while (i < vec[i].size() && j < vec.size()) {
+		if (vec[j][i] == player) {
 			count++;
 		}
 		else {
 			count = 0;
 		}
 		if (count == 4) {
-			cout << "diag " << endl;
 			return true;
 		}
 		i++;
@@ -130,7 +173,7 @@ bool diagCheck(vector<vector<int>> & vec, int row, int col, int player) {
 }
 
 bool drawCheck(vector<vector<int>> & vec) {
-	for (int i = 0; i < vec[i].size()-1; i++) {
+	for (int i = 0; i < vec.size(); i++) {
 		if (vec[i][vec[i].size() - 1] == 0) {
 			return false;
 		}
@@ -149,6 +192,14 @@ bool winCheck(vector<vector<int>> & vec, int row, int col, int player) {
 }
 
 int main() {
+
+	//vector<int> v;
+
+	//v.resize(7);
+
+	//for (int i = 0; i < v.size(); i++) {
+	//	cout << v[i];
+	//}
 
 	vector <vector<int>> vec;
 	vec.resize(7);
@@ -201,6 +252,8 @@ int main() {
 	//		j--;
 	//}
 
+
+
 	int n = (2 % 2) + 1;
 
 	int j = rand() % 7;
@@ -215,8 +268,11 @@ int main() {
 		placeMove(vec, j, n);
 		printVector(vec);
 		if (winCheck(vec, j, y , n) || drawCheck(vec)){
-			cout << winCheck(vec, j, y, n) << endl << endl;
-			cout << drawCheck(vec) << endl << endl;
+			cout << "Win Check : " << winCheck(vec, j, y, n) << endl << endl;
+			cout << "Diag Check : " << diagCheck(vec, j, y, n) << endl << endl;
+			cout << "vert Check : " << vertCheck(vec, y, n) << endl << endl;
+			cout << "horiz Check : " << horizCheck(vec, j, n) << endl << endl;
+			cout << "draw Check : " << drawCheck(vec) << endl << endl;
 			break;
 		}
 		n = (n % 2) + 1;
